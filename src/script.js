@@ -32,7 +32,8 @@ const options = {
     size: 1,
     noiseScale: 0.1,
     inverted: false,
-    angleType: 'static'
+    angleType: 'static',
+    znoise: false
 }
 
 const fromLS = localStorage.getItem('options');
@@ -43,6 +44,7 @@ if (fromLS) {
     options.noiseScale = parsed.noiseScale || 0.1;
     options.inverted = parsed.inverted || false;
     options.angleType = parsed.angleType || 'static';
+    options.znoise = parsed.znoise || false;
 }
 
 function onControlsChange() {
@@ -57,6 +59,7 @@ gui.add(options, 'noiseScale').min(0.001).max(0.3).step(0.001).name('simplex noi
 gui.add(options, 'size').min(1).max(10).step(1).name('size').onChange(onControlsChange);
 gui.add(options, 'inverted').name('invert').onChange(onControlsChange);
 gui.add(options, 'angleType').name('angle type').options(['static', '* time','+ time']).onChange(onControlsChange);
+gui.add(options, 'znoise').name('z noise').onChange(onControlsChange);
 gui.close()
 
 window.addEventListener('resize', () =>
@@ -112,7 +115,7 @@ function createGeometry() {
 function onScreen(px, py) {
     return px > 0 && px < sizes.width && py > 0 && py < sizes.height;
 }
-
+let zoff = 0;
 // Renderer
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -133,12 +136,20 @@ const tick = () =>
     const deltaTime = clock.getDelta()
 
     let particleGeometry = scene.getObjectByName('particleSystem').geometry;
-
+    zoff += 0.01;
     for (let i = 0; i < options.num; i++) {
         let px = particleGeometry.attributes.position.array[i * 3];
         let py = particleGeometry.attributes.position.array[i * 3 + 1];
 
-        let n = noise.noise(px * options.noiseScale, py * options.noiseScale);
+        let n;
+
+        if (options.znoise) {
+            n = noise.noise3d(px * options.noiseScale, py * options.noiseScale, zoff);
+        }
+        else {
+            n = noise.noise(px * options.noiseScale, py * options.noiseScale);
+        }
+
         let a;
 
         switch (options.angleType) {

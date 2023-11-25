@@ -54,8 +54,9 @@ const noise = new ImprovedNoise();
 // Debug
 var gui = new dat.GUI()
 gui.add(options, 'num').min(1000).max(300000).step(10000).name('particles').onChange(createGeometry);
-gui.add(options, 'noiseScale').min(0.001).max(0.3).step(0.001).name('perlin scale').onChange(createGeometry);
+gui.add(options, 'noiseScale').min(0.001).max(0.3).step(0.001).name('perlin noise').onChange(createGeometry);
 gui.add(options, 'size').min(1).max(10).step(1).name('size').onChange(createGeometry);
+gui.close()
 
 window.addEventListener('resize', () =>
 {

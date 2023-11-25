@@ -33,7 +33,9 @@ const options = {
     noiseScale: 0.1,
     inverted: false,
     angleType: 'static',
-    znoise: false
+    znoise: false,
+    cosScale: 1,
+    sinScale: 1,
 }
 
 const fromLS = localStorage.getItem('options');
@@ -45,6 +47,8 @@ if (fromLS) {
     options.inverted = parsed.inverted || false;
     options.angleType = parsed.angleType || 'static';
     options.znoise = parsed.znoise || false;
+    options.cosScale = parsed.cosScale || 1;
+    options.sinScale = parsed.sinScale || 1;
 }
 
 function onControlsChange() {
@@ -60,6 +64,8 @@ gui.add(options, 'size').min(1).max(10).step(1).name('size').onChange(onControls
 gui.add(options, 'inverted').name('invert').onChange(onControlsChange);
 gui.add(options, 'angleType').name('angle type').options(['static', '* time','+ time']).onChange(onControlsChange);
 gui.add(options, 'znoise').name('z noise').onChange(onControlsChange);
+gui.add(options, 'cosScale').min(1).max(10).step(0.1).name('cos scale').onChange(onControlsChange);
+gui.add(options, 'sinScale').min(1).max(10).step(0.1).name('sin scale').onChange(onControlsChange);
 gui.close()
 
 window.addEventListener('resize', () =>
@@ -167,8 +173,9 @@ const tick = () =>
                 break;
         }
 
-        px += Math.cos(a);
-        py += Math.sin(a);
+        px += Math.cos(a) * options.cosScale;
+        py += Math.sin(a) * options.sinScale;
+
         particleGeometry.attributes.position.array[i * 3] = px;
         particleGeometry.attributes.position.array[i * 3 + 1] = py;
         particleGeometry.attributes.position.array[i * 3 + 2] = 0;

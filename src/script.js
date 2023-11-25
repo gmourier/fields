@@ -101,8 +101,6 @@ function createGeometry() {
         color: options.inverted ? 0x000000 : 0xffffff,
     });
 
-    console.log(particleMaterial.color)
-
     const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
     particleSystem.name = 'particleSystem'
     particleSystem.sortParticles = true;
@@ -169,8 +167,6 @@ createGeometry();
 tick()
 
 function screenshot () {
-    console.log('screenshot');
-
     const fname =  `fields-${Date.now()}`
     const w = window.open('', '');
     w.document.title = fname;

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+
 *
 {
     margin: 0;
@@ -16,4 +18,27 @@ body
     top: 0;
     left: 0;
     outline: none;
+}
+
+a
+{
+    color: #f33d0f;
+    text-decoration: none;
+}
+
+#extended_controls
+{
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  color: #f33d0f;
+  padding: 8px;
+  font-family: 'DotGothic16', sans-serif;
+  font-size: 12px;
+  cursor: pointer
+}
+
+#extended_controls a:hover{
+  color: blue;
 }

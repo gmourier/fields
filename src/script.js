@@ -73,6 +73,8 @@ window.addEventListener('resize', () =>
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
+document.getElementById('screenshot').addEventListener('click', screenshot);
+
 function createGeometry() {
     //clean old ref for re-render
     scene.remove(scene.getObjectByName('particleSystem'));
@@ -160,4 +162,22 @@ const tick = () =>
 }
 
 createGeometry();
+
 tick()
+
+function screenshot () {
+    console.log('screenshot');
+
+    const fname =  `fields-${Date.now()}`
+    const w = window.open('', '');
+    w.document.title = fname;
+
+    const img = new Image();
+    img.src = renderer.domElement.toDataURL();
+    w.document.body.appendChild(img);
+
+    const a = document.createElement('a');
+    a.href = renderer.domElement.toDataURL().replace("image/png", "image/octet-stream");
+    a.download = `${fname}.png`;
+    a.click();
+}

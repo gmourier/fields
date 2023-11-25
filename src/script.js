@@ -53,7 +53,7 @@ function onControlsChange() {
 // Controls
 var gui = new dat.GUI()
 gui.add(options, 'num').min(1000).max(300000).step(10000).name('particles').onChange(onControlsChange);
-gui.add(options, 'noiseScale').min(0.001).max(0.3).step(0.001).name('perlin noise').onChange(onControlsChange);
+gui.add(options, 'noiseScale').min(0.001).max(0.3).step(0.001).name('simplex noise scale').onChange(onControlsChange);
 gui.add(options, 'size').min(1).max(10).step(1).name('size').onChange(onControlsChange);
 gui.add(options, 'inverted').name('invert').onChange(onControlsChange);
 gui.add(options, 'angleType').name('angle type').options(['static', '* time','+ time']).onChange(onControlsChange);

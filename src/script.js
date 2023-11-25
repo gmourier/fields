@@ -45,8 +45,6 @@ if (fromLS) {
     options.angleType = parsed.angleType || 'static';
 }
 
-console.log(options);
-
 function onControlsChange() {
     localStorage.setItem('options', JSON.stringify(options));
     createGeometry();

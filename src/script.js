@@ -25,7 +25,7 @@ var planeGeometry = new THREE.PlaneGeometry(sizes.width, sizes.height);
 var planeMaterial = new THREE.MeshBasicMaterial({
     color: 0x000000,
     transparent: true,
-    opacity: 0.01,
+    opacity: 0.1,
     side: THREE.DoubleSide
 });
 
@@ -45,6 +45,7 @@ scene.add(camGroup);
 
 const options = {
     num: 300000,
+    size: 1,
     noiseScale: 0.1
 }
 
@@ -53,7 +54,8 @@ const noise = new ImprovedNoise();
 // Debug
 var gui = new dat.GUI()
 gui.add(options, 'num').min(1000).max(300000).step(10000).name('particles').onChange(createGeometry);
-gui.add(options, 'noiseScale').min(0.001).max(1.0).step(0.001).name('perlin scale').onChange(createGeometry);
+gui.add(options, 'noiseScale').min(0.001).max(0.3).step(0.001).name('perlin scale').onChange(createGeometry);
+gui.add(options, 'size').min(1).max(10).step(1).name('size').onChange(createGeometry);
 
 window.addEventListener('resize', () =>
 {
@@ -88,7 +90,7 @@ function createGeometry() {
     particleGeometry.name = 'particleGeometry'
 
     const particleMaterial = new THREE.PointsMaterial({
-        size: 1,
+        size: options.size,
         opacity: 1,
         blending: THREE.AdditiveBlending,
         color: 0x555555

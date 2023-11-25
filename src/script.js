@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import * as dat from 'lil-gui'
-import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
+import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise.js';
 
 THREE.Cache.enabled = true;
 
@@ -25,7 +25,7 @@ const camGroup = new THREE.Group();
 camGroup.add(camera);
 scene.add(camGroup);
 
-const noise = new ImprovedNoise();
+const noise = new SimplexNoise();
 
 const options = {
     num: 300000,
@@ -146,8 +146,8 @@ const tick = () =>
         particleGeometry.attributes.position.array[i * 3 + 2] = 0;
 
         if (!onScreen(px, py)) {
-            particleGeometry.attributes.position.array[i * 3] = Math.random()* sizes.width;
-            particleGeometry.attributes.position.array[i * 3 + 1] = Math.random()* sizes.height;
+            particleGeometry.attributes.position.array[i * 3] = Math.random() * sizes.width;
+            particleGeometry.attributes.position.array[i * 3 + 1] = Math.random() * sizes.height;
             particleGeometry.attributes.position.array[i * 3 + 2] = 0;
         }
     }

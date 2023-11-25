@@ -79,7 +79,7 @@ function createGeometry() {
     scene.remove(scene.getObjectByName('particleSystem'));
 
     //change renderer background given inverted state
-    renderer.setClearColor(options.inverted ? 0xffffff : 0x000000, options.inverted ? 0 : 1);
+    renderer.setClearColor(options.inverted ? 0xffffff : 0x000000);
 
     const positions = new Float32Array(options.num * 3); // array of particle positions
     const particleGeometry = new THREE.BufferGeometry();
@@ -97,7 +97,6 @@ function createGeometry() {
     const particleMaterial = new THREE.PointsMaterial({
         size: options.size,
         opacity: 1,
-        blending: THREE.AdditiveBlending,
         color: options.inverted ? 0x000000 : 0xffffff,
     });
 

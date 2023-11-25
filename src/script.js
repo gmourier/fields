@@ -21,32 +21,33 @@ const camera = new THREE.OrthographicCamera(0, sizes.width, 0, sizes.height, 1, 
 camera.position.z = 1
 camera.zoom = 0.85;
 
-var planeGeometry = new THREE.PlaneGeometry(sizes.width, sizes.height);
-var planeMaterial = new THREE.MeshBasicMaterial({
-    color: 0x000000,
-    transparent: true,
-    opacity: 0.1,
-    side: THREE.DoubleSide
-});
+// var planeGeometry = new THREE.PlaneGeometry(sizes.width, sizes.height);
+// var planeMaterial = new THREE.MeshBasicMaterial({
+//     color: 0x000000,
+//     transparent: true,
+//     opacity: 0.1,
+//     side: THREE.DoubleSide
+// });
 
-var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+// var plane = new THREE.Mesh(planeGeometry, planeMaterial);
 
-// move plane
-plane.position.x = sizes.width/2;
-plane.position.y = sizes.height/2;
-plane.position.z = -0.1;
+// // move plane
+// plane.position.x = sizes.width/2;
+// plane.position.y = sizes.height/2;
+// plane.position.z = -0.1;
 
-plane.renderOrder = -1;
+// plane.renderOrder = -1;
 
 const camGroup = new THREE.Group();
 camGroup.add(camera);
-camGroup.add(plane)
+// camGroup.add(plane)
 scene.add(camGroup);
 
 const options = {
     num: 300000,
     size: 1,
-    noiseScale: 0.1
+    noiseScale: 0.1,
+    inverted: false
 }
 
 const noise = new ImprovedNoise();
@@ -56,6 +57,11 @@ var gui = new dat.GUI()
 gui.add(options, 'num').min(1000).max(300000).step(10000).name('particles').onChange(createGeometry);
 gui.add(options, 'noiseScale').min(0.001).max(0.3).step(0.001).name('perlin noise').onChange(createGeometry);
 gui.add(options, 'size').min(1).max(10).step(1).name('size').onChange(createGeometry);
+gui.add(options, 'inverted').name('invert').onChange(() => {
+    createGeometry();
+    renderer.setClearColor(options.inverted ? 0xffffff : 0x000000, 0);
+});
+
 gui.close()
 
 window.addEventListener('resize', () =>
@@ -96,7 +102,7 @@ function createGeometry() {
         size: options.size,
         opacity: 1,
         blending: THREE.AdditiveBlending,
-        color: 0x555555
+        color: options.inverted ? 0x000000 : 0xffffff,
     });
 
     const particleSystem = new THREE.Points(particleGeometry, particleMaterial);

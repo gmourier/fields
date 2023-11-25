@@ -21,27 +21,11 @@ const camera = new THREE.OrthographicCamera(0, sizes.width, 0, sizes.height, 1, 
 camera.position.z = 1
 camera.zoom = 0.85;
 
-// var planeGeometry = new THREE.PlaneGeometry(sizes.width, sizes.height);
-// var planeMaterial = new THREE.MeshBasicMaterial({
-//     color: 0x000000,
-//     transparent: true,
-//     opacity: 0.1,
-//     side: THREE.DoubleSide
-// });
-
-// var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-
-// // move plane
-// plane.position.x = sizes.width/2;
-// plane.position.y = sizes.height/2;
-// plane.position.z = -0.1;
-
-// plane.renderOrder = -1;
-
 const camGroup = new THREE.Group();
 camGroup.add(camera);
-// camGroup.add(plane)
 scene.add(camGroup);
+
+const noise = new ImprovedNoise();
 
 const options = {
     num: 300000,
@@ -50,17 +34,26 @@ const options = {
     inverted: false
 }
 
-const noise = new ImprovedNoise();
+const fromLS = localStorage.getItem('options');
+if (fromLS) {
+    const parsed = JSON.parse(fromLS);
+    options.num = parsed.num;
+    options.size = parsed.size;
+    options.noiseScale = parsed.noiseScale;
+    options.inverted = parsed.inverted;
+}
 
-// Debug
-var gui = new dat.GUI()
-gui.add(options, 'num').min(1000).max(300000).step(10000).name('particles').onChange(createGeometry);
-gui.add(options, 'noiseScale').min(0.001).max(0.3).step(0.001).name('perlin noise').onChange(createGeometry);
-gui.add(options, 'size').min(1).max(10).step(1).name('size').onChange(createGeometry);
-gui.add(options, 'inverted').name('invert').onChange(() => {
+function onControlsChange() {
+    localStorage.setItem('options', JSON.stringify(options));
     createGeometry();
-    renderer.setClearColor(options.inverted ? 0xffffff : 0x000000, 0);
-});
+}
+
+// Controls
+var gui = new dat.GUI()
+gui.add(options, 'num').min(1000).max(300000).step(10000).name('particles').onChange(onControlsChange);
+gui.add(options, 'noiseScale').min(0.001).max(0.3).step(0.001).name('perlin noise').onChange(onControlsChange);
+gui.add(options, 'size').min(1).max(10).step(1).name('size').onChange(onControlsChange);
+gui.add(options, 'inverted').name('invert').onChange(onControlsChange);
 
 gui.close()
 
@@ -85,6 +78,9 @@ function createGeometry() {
     //clean old ref for re-render
     scene.remove(scene.getObjectByName('particleSystem'));
 
+    //change renderer background given inverted state
+    renderer.setClearColor(options.inverted ? 0xffffff : 0x000000, options.inverted ? 0 : 1);
+
     const positions = new Float32Array(options.num * 3); // array of particle positions
     const particleGeometry = new THREE.BufferGeometry();
     for (let i = 0; i < options.num; i += 3) {
@@ -104,6 +100,8 @@ function createGeometry() {
         blending: THREE.AdditiveBlending,
         color: options.inverted ? 0x000000 : 0xffffff,
     });
+
+    console.log(particleMaterial.color)
 
     const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
     particleSystem.name = 'particleSystem'
@@ -168,7 +166,6 @@ const tick = () =>
 }
 
 createGeometry();
-
 tick()
 
 function screenshot () {

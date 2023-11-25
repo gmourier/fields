@@ -31,17 +31,21 @@ const options = {
     num: 300000,
     size: 1,
     noiseScale: 0.1,
-    inverted: false
+    inverted: false,
+    angleType: 'static'
 }
 
 const fromLS = localStorage.getItem('options');
 if (fromLS) {
     const parsed = JSON.parse(fromLS);
-    options.num = parsed.num;
-    options.size = parsed.size;
-    options.noiseScale = parsed.noiseScale;
-    options.inverted = parsed.inverted;
+    options.num = parsed.num || 300000;
+    options.size = parsed.size || 1;
+    options.noiseScale = parsed.noiseScale || 0.1;
+    options.inverted = parsed.inverted || false;
+    options.angleType = parsed.angleType || 'static';
 }
+
+console.log(options);
 
 function onControlsChange() {
     localStorage.setItem('options', JSON.stringify(options));
@@ -54,7 +58,7 @@ gui.add(options, 'num').min(1000).max(300000).step(10000).name('particles').onCh
 gui.add(options, 'noiseScale').min(0.001).max(0.3).step(0.001).name('perlin noise').onChange(onControlsChange);
 gui.add(options, 'size').min(1).max(10).step(1).name('size').onChange(onControlsChange);
 gui.add(options, 'inverted').name('invert').onChange(onControlsChange);
-
+gui.add(options, 'angleType').name('angle type').options(['static', '* time','+ time']).onChange(onControlsChange);
 gui.close()
 
 window.addEventListener('resize', () =>
@@ -136,15 +140,31 @@ const tick = () =>
         let px = particleGeometry.attributes.position.array[i * 3];
         let py = particleGeometry.attributes.position.array[i * 3 + 1];
 
-        let n = noise.noise(px * options.noiseScale, py * options.noiseScale, 0);
-        let a = (Math.PI * 2) * n;
+        let n = noise.noise(px * options.noiseScale, py * options.noiseScale);
+        let a;
+
+        switch (options.angleType) {
+            case 'static':
+                a = (Math.PI * 2) * n;
+                break;
+            case '* time':
+                a = (Math.PI * 2) * n * elapsedTime;
+                break;
+            case '+ time':
+                a = (Math.PI * 2) * n + elapsedTime;
+                break;
+            default:
+                a = (Math.PI * 2) * n;
+                break;
+        }
+
         px += Math.cos(a);
         py += Math.sin(a);
         particleGeometry.attributes.position.array[i * 3] = px;
         particleGeometry.attributes.position.array[i * 3 + 1] = py;
         particleGeometry.attributes.position.array[i * 3 + 2] = 0;
 
-        if (!onScreen(px, py)) {
+        if (!onScreen(px, py)) { //re-inject particle in canvas at a randomized vector if out of screen
             particleGeometry.attributes.position.array[i * 3] = Math.random() * sizes.width;
             particleGeometry.attributes.position.array[i * 3 + 1] = Math.random() * sizes.height;
             particleGeometry.attributes.position.array[i * 3 + 2] = 0;

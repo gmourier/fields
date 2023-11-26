@@ -1,6 +1,9 @@
-import * as THREE from 'three'
-import * as dat from 'lil-gui'
+import * as THREE from 'three';
+import * as dat from 'lil-gui';
 import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { AfterimagePass } from 'three/examples/jsm/postprocessing/AfterimagePass.js';
 
 THREE.Cache.enabled = true;
 
@@ -36,6 +39,8 @@ const options = {
     znoise: false,
     cosScale: 1,
     sinScale: 1,
+    trailing: false,
+    damping: 0.9,
 }
 
 const fromLS = localStorage.getItem('options');
@@ -49,10 +54,22 @@ if (fromLS) {
     options.znoise = parsed.znoise || false;
     options.cosScale = parsed.cosScale || 1;
     options.sinScale = parsed.sinScale || 1;
+    options.trailing = parsed.trailing || false;
+    options.damping = parsed.damping || 0.9;
 }
 
+function updateComposer() {
+    if (options.trailing) {
+        composer.addPass(afterImagePass);
+        afterImagePass.uniforms.damp.value = options.damping;
+    }
+    else {
+        composer.removePass(afterImagePass);
+    }
+}
 function onControlsChange() {
     localStorage.setItem('options', JSON.stringify(options));
+    updateComposer();
     createGeometry();
 }
 
@@ -66,6 +83,8 @@ gui.add(options, 'angleType').name('angle type').options(['static', '* time','+ 
 gui.add(options, 'znoise').name('z noise').onChange(onControlsChange);
 gui.add(options, 'cosScale').min(1).max(10).step(0.1).name('cos scale').onChange(onControlsChange);
 gui.add(options, 'sinScale').min(1).max(10).step(0.1).name('sin scale').onChange(onControlsChange);
+gui.add(options, 'trailing').name('trailing').onChange(onControlsChange);
+gui.add(options, 'damping').min(0.0).max(0.99).step(0.01).name('damping').onChange(onControlsChange);
 gui.close()
 
 window.addEventListener('resize', () =>
@@ -133,6 +152,16 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
+// Postprocessing
+const renderScene = new RenderPass(scene, camera);
+const afterImagePass = new AfterimagePass();
+afterImagePass.uniforms.damp.value = 0.8;
+
+const composer = new EffectComposer(renderer);
+composer.addPass(renderScene);
+
+updateComposer();
+
 // Animate
 const clock = new THREE.Clock()
 
@@ -194,7 +223,7 @@ const tick = () =>
     camera.updateProjectionMatrix();
 
     // Render
-    renderer.render(scene, camera)
+    composer.render(scene, camera);
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)

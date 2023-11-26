@@ -142,7 +142,9 @@ const tick = () =>
     const deltaTime = clock.getDelta()
 
     let particleGeometry = scene.getObjectByName('particleSystem').geometry;
+
     zoff += 0.01;
+
     for (let i = 0; i < options.num; i++) {
         let px = particleGeometry.attributes.position.array[i * 3];
         let py = particleGeometry.attributes.position.array[i * 3 + 1];

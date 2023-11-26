@@ -1,5 +1,7 @@
 # Fields
 
+![Alt text](samples/fields.gif)
+
 A simple generative art project revolving around the three.js particle system and the Simplex Noise function.
 
 You can play with the controls provided to make your own rendering and print it at home, or simply watch the shapes evolve.
@@ -24,7 +26,9 @@ You can play with the controls provided to make your own rendering and print it 
 
 ## Print
 
-At the bottom left, you'll find a print button. It simply takes a screenshot, removing all UI elements, and downloads it. Come and share them on twitter!
+At the bottom left, you'll find a print button. It simply takes a screenshot, removing all UI elements, and downloads it.
+
+Come and share them on twitter!
 
 ## Samples
 

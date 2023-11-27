@@ -39,8 +39,8 @@ const options = {
     znoise: false,
     cosScale: 1,
     sinScale: 1,
-    trailing: false,
-    damping: 0.9,
+    //trailing: false,
+    //damping: 0.9,
 }
 
 const fromLS = localStorage.getItem('options');
@@ -54,22 +54,23 @@ if (fromLS) {
     options.znoise = parsed.znoise || false;
     options.cosScale = parsed.cosScale || 1;
     options.sinScale = parsed.sinScale || 1;
-    options.trailing = parsed.trailing || false;
-    options.damping = parsed.damping || 0.9;
+    //options.trailing = parsed.trailing || false;
+    //options.damping = parsed.damping || 0.9;
 }
 
+//TODO: fix trailing
 function updateComposer() {
-    if (options.trailing) {
-        composer.addPass(afterImagePass);
-        afterImagePass.uniforms.damp.value = options.damping;
-    }
-    else {
-        composer.removePass(afterImagePass);
-    }
+    // if (options.trailing) {
+    //     composer.addPass(afterImagePass);
+    //     //afterImagePass.uniforms.damp.value = options.damping;
+    // }
+    // else {
+    //     composer.removePass(afterImagePass);
+    // }
 }
 function onControlsChange() {
     localStorage.setItem('options', JSON.stringify(options));
-    updateComposer();
+    //updateComposer();
     createGeometry();
 }
 
@@ -83,8 +84,8 @@ gui.add(options, 'angleType').name('angle type').options(['static', '* time','+ 
 gui.add(options, 'znoise').name('z noise').onChange(onControlsChange);
 gui.add(options, 'cosScale').min(1).max(10).step(0.1).name('cos scale').onChange(onControlsChange);
 gui.add(options, 'sinScale').min(1).max(10).step(0.1).name('sin scale').onChange(onControlsChange);
-gui.add(options, 'trailing').name('trailing').onChange(onControlsChange);
-gui.add(options, 'damping').min(0.0).max(0.99).step(0.01).name('damping').onChange(onControlsChange);
+//gui.add(options, 'trailing').name('trailing').onChange(onControlsChange);
+// gui.add(options, 'damping').min(0.0).max(0.99).step(0.01).name('damping').onChange(onControlsChange);
 gui.close()
 
 window.addEventListener('resize', () =>
@@ -154,8 +155,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 // Postprocessing
 const renderScene = new RenderPass(scene, camera);
-const afterImagePass = new AfterimagePass();
-afterImagePass.uniforms.damp.value = 0.8;
+// const afterImagePass = new AfterimagePass();
 
 const composer = new EffectComposer(renderer);
 composer.addPass(renderScene);
